@@ -1,0 +1,6 @@
+POST localhost:3000/movie
+Content-Type: application/json
+
+{
+  "title": "겨울왕국 3"
+}

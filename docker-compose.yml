@@ -1,0 +1,16 @@
+services:
+  netflix:
+    image: mysql:latest
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=alsry
+      - MYSQL_DATABASE=alsry
+      - MYSQL_USER=alsry
+      - MYSQL_PASSWORD=alsry
+    ports:
+      - "3306:3306"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
