@@ -36,6 +36,7 @@ import { Genre } from './genre/entity/genre.entity';
         entities: [Movie, MovieDetail, Director, Genre],
         synchronize: true, //코드에 맞게 DB 싱크를 맞춤, 운영에서는 하면 안됨
         // dropSchema: true,
+        logging: true,
         timezone: 'Z',
       }),
       inject: [ConfigService],
