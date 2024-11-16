@@ -2,14 +2,16 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
-  Unique,
 } from 'typeorm';
 import { BaseTable } from '../../common/entity/base-table.entity';
 import { MovieDetail } from './movie-detail.entity';
 import { Director } from '../../director/entity/director.entity';
+import { Genre } from '../../genre/entity/genre.entity';
+import { JoinTable } from 'typeorm';
 
 @Entity()
 // @Unique('TITLE_UNIQUE', ['title'])
@@ -22,8 +24,9 @@ export class Movie extends BaseTable {
   })
   title: string;
 
-  @Column()
-  genre: string;
+  @ManyToMany(() => Genre, (genre) => genre.movies)
+  @JoinTable()
+  genres: string;
 
   @OneToOne(
     () => MovieDetail,
