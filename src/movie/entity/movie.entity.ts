@@ -1,35 +1,44 @@
 import {
   Column,
   Entity,
-  JoinColumn, ManyToOne,
+  JoinColumn,
+  ManyToOne,
   OneToOne,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { BaseTable } from '../../common/entity/base-table.entity';
 import { MovieDetail } from './movie-detail.entity';
 import { Director } from '../../director/entity/director.entity';
 
-// ManyToOne Director
-// OneToOne MovieDetail
-// ManyToMany Genre -> 영화는 여러 개의 장르를 가질 수 있음. 장르는 여러 개의 영화에 속할 수 있음
-
 @Entity()
+// @Unique('TITLE_UNIQUE', ['title'])
 export class Movie extends BaseTable {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({
+    unique: true,
+  })
   title: string;
 
   @Column()
   genre: string;
 
-  @OneToOne(() => MovieDetail, (movieDetail) => movieDetail.id, {
-    cascade: true,
-  })
+  @OneToOne(
+    () => MovieDetail,
+    (movieDetail) => movieDetail.movie, //반대 엔티티에서 현재 엔티티와의 관계를 나타내는 필드를 지정한다.
+    {
+      cascade: true,
+      nullable: false,
+    },
+  )
   @JoinColumn()
-  movieDetail: MovieDetail;
+  detail: MovieDetail;
 
-  @ManyToOne(() => Director, (director) => director.id)
+  @ManyToOne(() => Director, (director) => director.id, {
+    cascade: true,
+    nullable: false,
+  })
   director: Director;
 }

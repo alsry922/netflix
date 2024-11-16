@@ -59,10 +59,6 @@ export class DirectorService {
   }
 
   remove(id: number) {
-    return this.directorRepository.delete({
-      where: {
-        id,
-      },
-    });
+    return this.directorRepository.delete({ id });
   }
 }

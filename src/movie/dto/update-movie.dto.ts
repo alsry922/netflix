@@ -54,4 +54,8 @@ export class UpdateMovieDto {
   detail?: string;
   // @isPasswordValid()
   // test: string;
+
+  @IsNotEmpty()
+  @IsOptional()
+  directorId?: number;
 }
