@@ -1,11 +1,15 @@
 import {
-  IsNotEmpty, IsNumber,
-  IsOptional, IsString,
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
   registerDecorator,
   ValidationArguments,
   ValidationOptions,
   ValidatorConstraint,
-  ValidatorConstraintInterface
+  ValidatorConstraintInterface,
 } from 'class-validator';
 
 //@ValidatorConstraint의 옵션 객체로 {async: true}를 넣어주면 비동기로도 검증 어노테이션을 적용할 수 있다.(해서 이점이 뭘까 싶긴 하다.)
@@ -46,16 +50,16 @@ export class UpdateMovieDto {
   @IsOptional()
   title?: string;
 
-  @IsNotEmpty()
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsNumber({}, { each: true })
   @IsOptional()
-  genre?: string;
+  genreIds?: number[];
 
   @IsNotEmpty()
   @IsString()
   @IsOptional()
   detail?: string;
-  // @isPasswordValid()
-  // test: string;
 
   @IsNotEmpty()
   @IsNumber()

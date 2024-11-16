@@ -24,10 +24,15 @@ export class MovieService {
   async findAll(title?: string) {
     //todo title 필터 기능 추가하기
     if (!title) {
-      const movies = await this.movieRepository.find();
+      const movies = await this.movieRepository.find({
+        relations: ['director', 'genres'],
+      });
       return movies;
     }
-    return this.movieRepository.find({ where: { title: Like(`%${title}%`) } });
+    return this.movieRepository.find({
+      where: { title: Like(`%${title}%`) },
+      relations: ['director', 'genres'],
+    });
   }
 
   async findOne(id: number) {
@@ -84,7 +89,7 @@ export class MovieService {
       throw new NotFoundException('존재하지 않는 ID의 영화입니다.');
     }
 
-    const { detail, directorId, ...movieRest } = updateMovieDto;
+    const { detail, directorId, genreIds, ...movieRest } = updateMovieDto;
 
     let newDirector;
 
@@ -98,8 +103,23 @@ export class MovieService {
       if (!director) {
         throw new NotFoundException('존재하지 않는 ID의 감독입니다.');
       }
-
       newDirector = director;
+    }
+
+    let newGenres;
+
+    if (genreIds) {
+      const genres = await this.genreRepository.find({
+        where: {
+          id: In(genreIds),
+        },
+      });
+      if (genres.length !== updateMovieDto.genreIds.length) {
+        throw new NotFoundException(
+          `존재하지 않는 장르가 있습니다! 존재하는 ids -> ${genres.map((genre) => genre.id).join(', ')}`,
+        );
+      }
+      newGenres = genres;
     }
 
     const movieUpdateFields = {
@@ -107,7 +127,7 @@ export class MovieService {
       ...(newDirector && { director: newDirector }),
     };
     //열거 가능하며, 순수하게 본인이 가지고 있는 자체 속성만 복사함
-    await this.movieRepository.update({ id }, movieRest);
+    await this.movieRepository.update({ id }, movieUpdateFields);
 
     if (detail) {
       await this.movieDetailRepository.update(
@@ -124,7 +144,14 @@ export class MovieService {
       relations: ['detail', 'director'],
     });
 
-    return newMovie;
+    newMovie.genres = newGenres;
+    return await this.movieRepository.save(newMovie);
+
+    // return this.movieRepository.findOne({
+    //   where: { id },
+    //   relations: ['detail', 'director', 'genres'],
+    // });
+    // return newMovie;
   }
 
   async remove(id: number) {
