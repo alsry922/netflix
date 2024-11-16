@@ -26,11 +26,11 @@ export class Movie extends BaseTable {
 
   @ManyToMany(() => Genre, (genre) => genre.movies)
   @JoinTable()
-  genres: string;
+  genres: Genre[];
 
   @OneToOne(
     () => MovieDetail,
-    (movieDetail) => movieDetail.movie, //반대 엔티티에서 현재 엔티티와의 관계를 나타내는 필드를 지정한다.
+    (movieDetail) => movieDetail.movie, //반대 엔티티의 어떤 필드가 현재 엔티티와의 관계를 나타내지 필드를 지정한다.
     {
       cascade: true,
       nullable: false,
