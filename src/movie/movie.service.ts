@@ -7,6 +7,8 @@ import { In, Repository } from 'typeorm';
 import { MovieDetail } from './entity/movie-detail.entity';
 import { Director } from '../director/entity/director.entity';
 import { Genre } from '../genre/entity/genre.entity';
+import { plainToInstance } from 'class-transformer';
+import { ResponseMovieDto } from './dto/response-movie.dto';
 
 @Injectable()
 export class MovieService {
@@ -35,7 +37,9 @@ export class MovieService {
       });
     }
 
-    return await qb.getManyAndCount();
+    const result = await qb.getMany();
+    const response = plainToInstance(ResponseMovieDto, result);
+    return response;
 
     // //todo title 필터 기능 추가하기
     // if (!title) {

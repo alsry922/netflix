@@ -5,14 +5,6 @@ export class CreateMovieDto {
   @IsString()
   title: string;
 
-  @IsNotEmpty()
-  @IsString()
-  detail: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  directorId: number;
-
   @IsArray()
   @ArrayNotEmpty()
   @IsNumber(
@@ -22,4 +14,12 @@ export class CreateMovieDto {
     },
   )
   genreIds: number[];
+
+  @IsNotEmpty()
+  @IsString()
+  detail: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  directorId: number;
 }

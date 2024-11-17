@@ -1,16 +1,12 @@
 import {
-  ArrayNotEmpty,
-  IsArray,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
   registerDecorator,
   ValidationArguments,
   ValidationOptions,
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateMovieDto } from './create-movie.dto';
 
 //@ValidatorConstraint의 옵션 객체로 {async: true}를 넣어주면 비동기로도 검증 어노테이션을 적용할 수 있다.(해서 이점이 뭘까 싶긴 하다.)
 @ValidatorConstraint()
@@ -44,25 +40,27 @@ function isPasswordValid(
   };
 }
 
-export class UpdateMovieDto {
-  @IsNotEmpty()
-  @IsString()
-  @IsOptional()
-  title?: string;
+export class UpdateMovieDto extends PartialType(CreateMovieDto) {}
 
-  @IsArray()
-  @ArrayNotEmpty()
-  @IsNumber({}, { each: true })
-  @IsOptional()
-  genreIds?: number[];
-
-  @IsNotEmpty()
-  @IsString()
-  @IsOptional()
-  detail?: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @IsOptional()
-  directorId?: number;
-}
+// export class UpdateMovieDto {
+//   @IsNotEmpty()
+//   @IsString()
+//   @IsOptional()
+//   title?: string;
+//
+//   @IsArray()
+//   @ArrayNotEmpty()
+//   @IsNumber({}, { each: true })
+//   @IsOptional()
+//   genreIds?: number[];
+//
+//   @IsNotEmpty()
+//   @IsString()
+//   @IsOptional()
+//   detail?: string;
+//
+//   @IsNotEmpty()
+//   @IsNumber()
+//   @IsOptional()
+//   directorId?: number;
+// }

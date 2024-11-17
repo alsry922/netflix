@@ -4,25 +4,30 @@ import {
   Controller,
   Delete,
   Get,
-  Param, ParseIntPipe,
+  Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
-  UseInterceptors
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { MovieService } from './movie.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
-import { plainToClass } from 'class-transformer';
+import { AuthGuard } from '../auth/guard/auth.guard';
+import { Public } from '../auth/decorator/public.decorator';
 
 @Controller('movie')
 @UseInterceptors(ClassSerializerInterceptor) //class-transformer를 MovieController에 적용하겠다.
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
 
+  @Public()
   @Get()
-  getMovies(@Query('title') title?: string) {
-    return this.movieService.findAll(title);
+  async getMovies(@Query('title') title?: string) {
+    const result = await this.movieService.findAll(title);
+    return result;
   }
 
   @Get(':id')
@@ -31,6 +36,7 @@ export class MovieController {
     return this.movieService.findOne(+id);
   }
 
+  @UseGuards(AuthGuard)
   @Post()
   async postMovie(@Body() body: CreateMovieDto) {
     const movie = await this.movieService.createMovie(body);
