@@ -9,26 +9,27 @@ export class MovieController {
 
   @Post()
   create(@Body() createMovieDto: CreateMovieDto) {
-    return this.movieService.create(createMovieDto);
+    return this.movieService.createMovie(createMovieDto);
   }
 
   @Get()
   findAll() {
-    return this.movieService.findAll();
+    return this.movieService.getManyMovies();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.movieService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    console.log(id, typeof id);
+    return this.movieService.getMovieById(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMovieDto: UpdateMovieDto) {
-    return this.movieService.update(+id, updateMovieDto);
+  update(@Param('id') id: number, @Body() updateMovieDto: UpdateMovieDto) {
+    return this.movieService.updateMovie(id, updateMovieDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.movieService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.movieService.remove(id);
   }
 }
