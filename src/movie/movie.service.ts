@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Movie } from './entities/movie.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -12,9 +12,17 @@ export class MovieService {
     private readonly movieRepository: Repository<Movie>,
   ) {}
 
-  getManyMovies(title?: string) {
+  async getManyMovies(title?: string) {
     // todo title 기능 구현
-    return this.movieRepository.find();
+    if (!title) {
+      return [await this.movieRepository.find(), await this.movieRepository.count()];
+    }
+
+    return this.movieRepository.findAndCount({
+      where: {
+        title: Like(`%${title}%`),
+      },
+    });
   }
 
   async getMovieById(id: number) {
