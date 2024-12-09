@@ -14,12 +14,12 @@ export class MovieController {
 
   @Get()
   findAll(@Query('title') title?: string) {
-    return this.movieService.getManyMovies(title);
+    return this.movieService.findAll(title);
   }
 
   @Get(':id')
   findOne(@Param('id') id: number) {
-    return this.movieService.getMovieById(id);
+    return this.movieService.findOne(id);
   }
 
   @Patch(':id')

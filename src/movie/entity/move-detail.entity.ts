@@ -1,5 +1,5 @@
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { BaseTable } from './bast-table.entity';
+import { BaseTable } from '../../common/entity/bast-table.entity';
 import { Movie } from './movie.entity';
 import { JoinColumn } from 'typeorm';
 

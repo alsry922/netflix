@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MovieModule } from './movie/movie.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { DirectorModule } from './director/director.module';
 import * as Joi from 'joi';
 import * as path from 'node:path';
 
@@ -32,13 +33,14 @@ import * as path from 'node:path';
           database: configService.get<string>('DB_DATABASE'),
           entities: [path.join(__dirname, './**/*.entity.js')],
           synchronize: true,
-          // dropSchema: true,
+          dropSchema: true,
           timezone: 'Z',
           logging: true,
         };
       },
     }),
     MovieModule,
+    DirectorModule,
   ],
 })
 export class AppModule {}
