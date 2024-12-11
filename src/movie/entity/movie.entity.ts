@@ -1,7 +1,18 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 import { BaseTable } from '../../common/entity/bast-table.entity';
 import { MovieDetail } from './move-detail.entity';
 import { Director } from '../../director/entity/director.entity';
+import { Genre } from '../../genre/entity/genre.entity';
 
 // ManyToOne Director -> 감독은 여러 영화를 만들 수 있음
 // OneToOne MovieDetail -> 영화는 하나의 상세 내용을 가질 수 있음
@@ -16,13 +27,14 @@ export class Movie extends BaseTable {
   @Column()
   title: string;
 
-  @Column()
-  genre: string;
+  @ManyToMany(() => Genre, (genre) => genre.movies)
+  @JoinTable()
+  genres: Genre[];
 
-  @OneToOne(() => MovieDetail, (movieDetail) => movieDetail.movie, { cascade: true })
+  @OneToOne(() => MovieDetail, (movieDetail) => movieDetail.movie, { cascade: true, nullable: false })
   detail: MovieDetail;
 
-  @ManyToOne(() => Director, (director) => director.movies, { cascade: true })
+  @ManyToOne(() => Director, (director) => director.movies, { cascade: true, nullable: false })
   @JoinColumn({
     foreignKeyConstraintName: 'FK_MOVIE_DIRECTOR',
   })
