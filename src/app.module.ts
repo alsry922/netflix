@@ -34,7 +34,7 @@ import * as path from 'node:path';
           database: configService.get<string>('DB_DATABASE'),
           entities: [path.join(__dirname, './**/*.entity.js')],
           synchronize: true,
-          dropSchema: true,
+          // dropSchema: true,
           timezone: 'Z',
           logging: true,
         };
