@@ -7,6 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MovieDetail } from './entity/move-detail.entity';
 import { Director } from '../director/entity/director.entity';
 import { Genre } from '../genre/entity/genre.entity';
+import { plainToInstance } from 'class-transformer';
+import { ResponseMovieListDto } from './dto/response-movie-list.dto';
 
 @Injectable()
 export class MovieService {
@@ -23,20 +25,24 @@ export class MovieService {
 
   async findAll(title?: string) {
     // todo title 기능 구현
+    let movies;
     if (!title) {
-      return [
-        await this.movieRepository.find({
-          relations: ['director', 'genres'],
-        }),
-        await this.movieRepository.count(),
-      ];
+      movies = await this.movieRepository.find({
+        relations: ['director', 'genres'],
+      });
+      return plainToInstance(ResponseMovieListDto, movies, {
+        excludeExtraneousValues: true,
+      });
     }
 
-    return this.movieRepository.findAndCount({
+    movies = await this.movieRepository.find({
       where: {
         title: Like(`%${title}%`),
       },
       relations: ['director', 'genres'],
+    });
+    return plainToInstance(ResponseMovieListDto, movies, {
+      excludeExtraneousValues: true,
     });
   }
 

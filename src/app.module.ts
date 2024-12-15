@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DirectorModule } from './director/director.module';
 import { GenreModule } from './genre/genre.module';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 import * as Joi from 'joi';
 import * as path from 'node:path';
 
@@ -43,6 +45,8 @@ import * as path from 'node:path';
     MovieModule,
     DirectorModule,
     GenreModule,
+    AuthModule,
+    UserModule,
   ],
 })
 export class AppModule {}
