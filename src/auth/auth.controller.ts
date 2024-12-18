@@ -1,5 +1,15 @@
-import { Controller, Post, Headers, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Controller,
+  Headers,
+  Post,
+  UseGuards,
+  UseInterceptors,
+  Request,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { AuthGuard } from '@nestjs/passport';
+import { LocalAuthGuard } from './strategy/local.strategy';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -15,5 +25,11 @@ export class AuthController {
   @Post('login')
   loginUser(@Headers('authorization') token: string) {
     return this.authService.login(token);
+  }
+
+  @UseGuards(LocalAuthGuard)
+  @Post('login/passport')
+  loginUserPassport(@Request() req) {
+    return req.user;
   }
 }
