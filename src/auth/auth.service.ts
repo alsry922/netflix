@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { UserRoleEnum } from '../user/const/user-role.enum';
 
 @Injectable()
 export class AuthService {
@@ -67,7 +68,8 @@ export class AuthService {
     return user;
   }
 
-  async issueToken(user: User, isRefreshToken: boolean) {
+  // todo payload가 issueToken으로 넘어오는 경우 id 프로퍼티는 존재하지 않음
+  async issueToken(user: { id: number; role: UserRoleEnum }, isRefreshToken: boolean) {
     const refreshTokenSecret = this.configService.get<string>('REFRESH_TOKEN_SECRET');
     const accessTokenSecret = this.configService.get<string>('ACCESS_TOKEN_SECRET');
     return await this.jwtService.signAsync(
@@ -89,7 +91,11 @@ export class AuthService {
       throw new BadRequestException('토큰 포맷이 잘못되었습니다.');
     }
 
-    const [_, token] = basicSplit;
+    const [basic, token] = basicSplit;
+
+    if (basic.toLowerCase() !== 'basic') {
+      throw new BadRequestException('토큰 포맷이 잘못되었습니다.');
+    }
 
     const decoded = Buffer.from(token, 'base64').toString('utf-8');
 
@@ -105,5 +111,34 @@ export class AuthService {
       email,
       password,
     };
+  }
+
+  async parseBearerToken(rawToken: string, isRefreshToken: boolean) {
+    const basicSplit = rawToken.split(' ');
+    if (basicSplit.length !== 2) {
+      throw new BadRequestException('토큰 포맷이 잘못되었습니다.');
+    }
+
+    const [bearer, token] = basicSplit;
+
+    if (bearer.toLowerCase() !== 'bearer') {
+      throw new BadRequestException('토큰 포맷이 잘못되었습니다.');
+    }
+
+    const payload = await this.jwtService.verifyAsync(token, {
+      secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
+    });
+
+    if (isRefreshToken) {
+      if (payload.type !== 'refresh') {
+        throw new BadRequestException('Refresh 토큰을 입력해주세요');
+      }
+    } else {
+      if (payload.type !== 'access') {
+        throw new BadRequestException('Access 토큰을 입력해주세요');
+      }
+    }
+
+    return payload;
   }
 }
