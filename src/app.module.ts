@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import * as Joi from 'joi';
 import * as path from 'node:path';
+import { envVariableKeys } from './common/const/env.const';
 
 @Module({
   imports: [
@@ -31,12 +32,12 @@ import * as path from 'node:path';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         return {
-          type: configService.get<string>('DB_TYPE') as 'mysql',
-          host: configService.get<string>('DB_HOST'),
-          port: configService.get<number>('DB_PORT'),
-          username: configService.get<string>('DB_USERNAME'),
-          password: configService.get<string>('DB_PASSWORD'),
-          database: configService.get<string>('DB_DATABASE'),
+          type: configService.get<string>(envVariableKeys.dbType) as 'mysql',
+          host: configService.get<string>(envVariableKeys.dbHost),
+          port: configService.get<number>(envVariableKeys.dbPort),
+          username: configService.get<string>(envVariableKeys.dbUsername),
+          password: configService.get<string>(envVariableKeys.dbPassword),
+          database: configService.get<string>(envVariableKeys.dbDatabase),
           entities: [path.join(__dirname, './**/*.entity.js')],
           synchronize: true,
           // dropSchema: true,
