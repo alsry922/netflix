@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserRoleEnum } from '../user/const/user-role.enum';
+import { envVariableKeys } from '../common/const/env.const';
 
 @Injectable()
 export class AuthService {
@@ -74,7 +75,7 @@ export class AuthService {
     const accessTokenSecret = this.configService.get<string>('ACCESS_TOKEN_SECRET');
     return await this.jwtService.signAsync(
       {
-        sub: user.id,
+        id: user.id,
         role: user.role,
         type: isRefreshToken ? 'refresh' : 'access',
       },
@@ -126,7 +127,9 @@ export class AuthService {
     }
 
     const payload = await this.jwtService.verifyAsync(token, {
-      secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
+      secret: this.configService.get<string>(
+        isRefreshToken ? envVariableKeys.refreshTokenSecret : envVariableKeys.accessTokenSecret,
+      ),
     });
 
     if (isRefreshToken) {
