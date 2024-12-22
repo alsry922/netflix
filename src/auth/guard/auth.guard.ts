@@ -18,6 +18,10 @@ export class AuthGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
 
-    return !(!request.user || request.user.type !== 'access');
+    if (!request.user || request.user.type !== 'access') {
+      return false;
+    }
+
+    return true;
   }
 }

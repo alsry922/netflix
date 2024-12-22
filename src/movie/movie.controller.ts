@@ -15,6 +15,7 @@ import { MovieService } from './movie.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { AuthGuard } from '../auth/guard/auth.guard';
+import { Public } from '../auth/decorator/public.decorator';
 
 @Controller('movie')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -27,6 +28,7 @@ export class MovieController {
     return this.movieService.createMovie(createMovieDto);
   }
 
+  @Public()
   @Get()
   findAll(@Query('title') title?: string) {
     return this.movieService.findAll(title);
