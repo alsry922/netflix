@@ -18,6 +18,7 @@ import { AuthGuard } from '../auth/guard/auth.guard';
 import { Public } from '../auth/decorator/public.decorator';
 import { RBAC } from '../auth/decorator/rbac.decorator';
 import { UserRoleEnum } from '../user/const/user-role.enum';
+import { GetMoviesDto } from './dto/get-movies.dto';
 
 @Controller('movie')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -33,8 +34,8 @@ export class MovieController {
 
   @Public()
   @Get()
-  findAll(@Query('title') title?: string) {
-    return this.movieService.findAll(title);
+  findAll(@Query() queryDto?: GetMoviesDto) {
+    return this.movieService.findAll(queryDto);
   }
 
   @Public()

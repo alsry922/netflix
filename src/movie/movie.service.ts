@@ -9,6 +9,9 @@ import { Director } from '../director/entity/director.entity';
 import { Genre } from '../genre/entity/genre.entity';
 import { plainToInstance } from 'class-transformer';
 import { ResponseMovieListDto } from './dto/response-movie-list.dto';
+import { GetMoviesDto } from './dto/get-movies.dto';
+import { ResponseMovieSimpleDto } from './dto/response-movie-simple.dto';
+import { CommonService } from '../common/common.service';
 
 @Injectable()
 export class MovieService {
@@ -21,29 +24,35 @@ export class MovieService {
     private readonly directorRepository: Repository<Director>,
     @InjectRepository(Genre)
     private readonly genreRepository: Repository<Genre>,
+    private readonly commonService: CommonService,
   ) {}
 
-  async findAll(title?: string) {
+  async findAll(queryDto: GetMoviesDto) {
+    const { title, take, page } = queryDto;
     // todo title 기능 구현
-    let movies;
-    if (!title) {
-      movies = await this.movieRepository.find({
-        relations: ['director', 'genres'],
-      });
-      return plainToInstance(ResponseMovieListDto, movies, {
-        excludeExtraneousValues: true,
-      });
+    const qb = this.movieRepository
+      .createQueryBuilder('movie')
+      .leftJoinAndSelect('movie.director', 'director')
+      .leftJoinAndSelect('movie.genres', 'genres');
+
+    if (title) {
+      qb.where('movie.title LIKE :title', { title: `%${title}%` });
     }
 
-    movies = await this.movieRepository.find({
-      where: {
-        title: Like(`%${title}%`),
+    this.commonService.applyPagePaginationParamsToQb(qb, queryDto);
+
+    // qb.take(take).skip((page - 1) * take);
+    // qb.offset(page * take + 1).limit(take);
+    const [movies, count] = await qb.getManyAndCount();
+
+    const responseMovieSimpleDto = plainToInstance(ResponseMovieSimpleDto, movies);
+    return plainToInstance(
+      ResponseMovieListDto,
+      { data: responseMovieSimpleDto, count },
+      {
+        excludeExtraneousValues: true,
       },
-      relations: ['director', 'genres'],
-    });
-    return plainToInstance(ResponseMovieListDto, movies, {
-      excludeExtraneousValues: true,
-    });
+    );
   }
 
   async findOne(id: number) {
