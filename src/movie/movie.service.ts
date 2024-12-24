@@ -28,7 +28,7 @@ export class MovieService {
   ) {}
 
   async findAll(queryDto: GetMoviesDto) {
-    const { title, take, page } = queryDto;
+    const { title } = queryDto;
     // todo title 기능 구현
     const qb = this.movieRepository
       .createQueryBuilder('movie')
@@ -39,8 +39,8 @@ export class MovieService {
       qb.where('movie.title LIKE :title', { title: `%${title}%` });
     }
 
-    this.commonService.applyPagePaginationParamsToQb(qb, queryDto);
-
+    // this.commonService.applyPagePaginationParamsToQb(qb, queryDto);
+    const { nextCursor } = await this.commonService.applyCursorPaginationParamsToQb(qb, queryDto);
     // qb.take(take).skip((page - 1) * take);
     // qb.offset(page * take + 1).limit(take);
     const [movies, count] = await qb.getManyAndCount();
@@ -48,7 +48,7 @@ export class MovieService {
     const responseMovieSimpleDto = plainToInstance(ResponseMovieSimpleDto, movies);
     return plainToInstance(
       ResponseMovieListDto,
-      { data: responseMovieSimpleDto, count },
+      { data: responseMovieSimpleDto, count, nextCursor },
       {
         excludeExtraneousValues: true,
       },
