@@ -13,6 +13,7 @@ import { GetMoviesDto } from './dto/get-movies.dto';
 import { ResponseMovieSimpleDto } from './dto/response-movie-simple.dto';
 import { CommonService } from '../common/common.service';
 import { join } from 'node:path';
+import { rename } from 'node:fs/promises';
 
 @Injectable()
 export class MovieService {
@@ -71,7 +72,7 @@ export class MovieService {
     return movie;
   }
 
-  async createMovie(createMovieDto: CreateMovieDto, movieFileName: string) {
+  async createMovie(createMovieDto: CreateMovieDto) {
     const director = await this.directorRepository.findOne({
       where: {
         id: createMovieDto.directorId,
@@ -93,6 +94,12 @@ export class MovieService {
     }
 
     const movieFolder = join('public', 'movie');
+    const tempFolder = join('public', 'temp');
+
+    await rename(
+      join(process.cwd(), tempFolder, createMovieDto.movieFileName),
+      join(process.cwd(), movieFolder, createMovieDto.movieFileName),
+    );
 
     const movie = await this.movieRepository.save({
       ...createMovieDto,
@@ -101,7 +108,7 @@ export class MovieService {
       },
       director,
       genres,
-      movieFilePath: join(movieFolder, movieFileName),
+      movieFilePath: join(movieFolder, createMovieDto.movieFileName),
     });
 
     return movie;
