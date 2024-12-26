@@ -12,6 +12,7 @@ import { ResponseMovieListDto } from './dto/response-movie-list.dto';
 import { GetMoviesDto } from './dto/get-movies.dto';
 import { ResponseMovieSimpleDto } from './dto/response-movie-simple.dto';
 import { CommonService } from '../common/common.service';
+import { join } from 'node:path';
 
 @Injectable()
 export class MovieService {
@@ -70,7 +71,7 @@ export class MovieService {
     return movie;
   }
 
-  async createMovie(createMovieDto: CreateMovieDto) {
+  async createMovie(createMovieDto: CreateMovieDto, movieFileName: string) {
     const director = await this.directorRepository.findOne({
       where: {
         id: createMovieDto.directorId,
@@ -91,6 +92,8 @@ export class MovieService {
       throw new NotFoundException('존재하지 않는 ID의 장르가 있습니다');
     }
 
+    const movieFolder = join('public', 'movie');
+
     const movie = await this.movieRepository.save({
       ...createMovieDto,
       detail: {
@@ -98,6 +101,7 @@ export class MovieService {
       },
       director,
       genres,
+      movieFilePath: join(movieFolder, movieFileName),
     });
 
     return movie;

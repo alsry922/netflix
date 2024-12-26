@@ -39,6 +39,9 @@ export class Movie extends BaseTable {
   @OneToOne(() => MovieDetail, (movieDetail) => movieDetail.movie, { cascade: true, nullable: false })
   detail: MovieDetail;
 
+  @Column()
+  movieFilePath: string;
+
   @ManyToOne(() => Director, (director) => director.movies, { cascade: true, nullable: false })
   @JoinColumn({
     foreignKeyConstraintName: 'FK_MOVIE_DIRECTOR',
