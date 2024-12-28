@@ -62,7 +62,7 @@ export class MovieService {
       where: {
         id,
       },
-      relations: ['detail', 'director', 'genres'],
+      relations: ['detail', 'director', 'genres', 'creator'],
     });
 
     if (!movie) {
@@ -72,7 +72,7 @@ export class MovieService {
     return movie;
   }
 
-  async createMovie(createMovieDto: CreateMovieDto) {
+  async createMovie(createMovieDto: CreateMovieDto, userId: number) {
     const director = await this.directorRepository.findOne({
       where: {
         id: createMovieDto.directorId,
@@ -96,11 +96,6 @@ export class MovieService {
     const movieFolder = join('public', 'movie');
     const tempFolder = join('public', 'temp');
 
-    await rename(
-      join(process.cwd(), tempFolder, createMovieDto.movieFileName),
-      join(process.cwd(), movieFolder, createMovieDto.movieFileName),
-    );
-
     const movie = await this.movieRepository.save({
       ...createMovieDto,
       detail: {
@@ -108,8 +103,16 @@ export class MovieService {
       },
       director,
       genres,
+      creator: {
+        id: userId,
+      },
       movieFilePath: join(movieFolder, createMovieDto.movieFileName),
     });
+
+    await rename(
+      join(process.cwd(), tempFolder, createMovieDto.movieFileName),
+      join(process.cwd(), movieFolder, createMovieDto.movieFileName),
+    );
 
     return movie;
   }

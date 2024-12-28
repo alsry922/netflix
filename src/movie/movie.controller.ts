@@ -19,6 +19,7 @@ import { Public } from '../auth/decorator/public.decorator';
 import { RBAC } from '../auth/decorator/rbac.decorator';
 import { UserRoleEnum } from '../user/const/user-role.enum';
 import { GetMoviesDto } from './dto/get-movies.dto';
+import { UserId } from '../user/decorator/user-id.decorator';
 
 @Controller('movie')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -28,8 +29,8 @@ export class MovieController {
   @Post()
   @RBAC(UserRoleEnum.ADMIN)
   @UseGuards(AuthGuard)
-  create(@Body() createMovieDto: CreateMovieDto) {
-    return this.movieService.createMovie(createMovieDto);
+  create(@Body() createMovieDto: CreateMovieDto, @UserId() userId: number) {
+    return this.movieService.createMovie(createMovieDto, userId);
   }
 
   @Public()

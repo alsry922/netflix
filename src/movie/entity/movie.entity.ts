@@ -13,6 +13,7 @@ import { BaseTable } from '../../common/entity/bast-table.entity';
 import { MovieDetail } from './move-detail.entity';
 import { Director } from '../../director/entity/director.entity';
 import { Genre } from '../../genre/entity/genre.entity';
+import { User } from '../../user/entity/user.entity';
 
 // ManyToOne Director -> 감독은 여러 영화를 만들 수 있음
 // OneToOne MovieDetail -> 영화는 하나의 상세 내용을 가질 수 있음
@@ -38,6 +39,9 @@ export class Movie extends BaseTable {
 
   @OneToOne(() => MovieDetail, (movieDetail) => movieDetail.movie, { cascade: true, nullable: false })
   detail: MovieDetail;
+
+  @ManyToOne(() => User, (user) => user.createdMovies)
+  creator: User;
 
   @Column()
   movieFilePath: string;
