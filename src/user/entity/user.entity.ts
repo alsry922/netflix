@@ -2,6 +2,7 @@ import { Column, DeepPartial, Entity, OneToMany, PrimaryGeneratedColumn, Unique 
 import { BaseTable } from '../../common/entity/bast-table.entity';
 import { UserRoleEnum } from '../const/user-role.enum';
 import { Movie } from '../../movie/entity/movie.entity';
+import { MovieUserLike } from '../../movie/entity/movie-user-like.entity';
 
 @Entity()
 @Unique('UQ_USER_EMAIL', ['email'])
@@ -24,6 +25,9 @@ export class User extends BaseTable {
 
   @OneToMany(() => Movie, (movie) => movie.creator)
   createdMovies: Movie[];
+
+  @OneToMany(() => MovieUserLike, (movieUserLike) => movieUserLike.user)
+  likedMovies: MovieUserLike[];
 
   public static from(partialUser: DeepPartial<User>): User {
     const user = new User();

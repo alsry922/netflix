@@ -16,4 +16,7 @@ export class ResponseMovieSimpleDto {
   @Expose()
   @Type(() => ResponseDirectorSimpleDto)
   director: ResponseDirectorSimpleDto;
+
+  @Expose()
+  likeStatus: boolean;
 }

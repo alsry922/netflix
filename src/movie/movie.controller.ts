@@ -23,20 +23,20 @@ import { UserId } from '../user/decorator/user-id.decorator';
 
 @Controller('movie')
 @UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(AuthGuard)
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
 
   @Post()
   @RBAC(UserRoleEnum.ADMIN)
-  @UseGuards(AuthGuard)
   create(@Body() createMovieDto: CreateMovieDto, @UserId() userId: number) {
     return this.movieService.createMovie(createMovieDto, userId);
   }
 
   @Public()
   @Get()
-  findAll(@Query() queryDto?: GetMoviesDto) {
-    return this.movieService.findAll(queryDto);
+  findAll(@Query() queryDto: GetMoviesDto, @UserId() userId?: number) {
+    return this.movieService.findAll(queryDto, userId);
   }
 
   @Public()
@@ -55,5 +55,15 @@ export class MovieController {
   @Delete(':id')
   remove(@Param('id') id: number) {
     return this.movieService.remove(id);
+  }
+
+  @Post(':id/like')
+  createMovieLike(@Param('id') movieId: number, @UserId() userId: number) {
+    return this.movieService.toggleMovieLike(movieId, userId, true);
+  }
+
+  @Post(':id/like')
+  createMovieDislike(@Param('id') movieId: number, @UserId() userId: number) {
+    return this.movieService.toggleMovieLike(movieId, userId, false);
   }
 }
