@@ -21,7 +21,21 @@ import { UserRoleEnum } from '../user/const/user-role.enum';
 import { GetMoviesDto } from './dto/get-movies.dto';
 import { UserId } from '../user/decorator/user-id.decorator';
 
-@Controller('movie')
+@Controller({
+  path: 'movie',
+  version: '2',
+})
+export class MovieControllerV2 {
+  @Get()
+  getMovies() {
+    return [];
+  }
+}
+
+@Controller({
+  path: 'movie',
+  version: '1',
+})
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard)
 export class MovieController {
