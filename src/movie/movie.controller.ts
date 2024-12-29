@@ -39,6 +39,11 @@ export class MovieController {
     return this.movieService.findAll(queryDto, userId);
   }
 
+  @Get('recent')
+  getMoviesRecent() {
+    return this.movieService.findRecent();
+  }
+
   @Public()
   @Get(':id')
   findOne(@Param('id') id: number) {
@@ -62,7 +67,7 @@ export class MovieController {
     return this.movieService.toggleMovieLike(movieId, userId, true);
   }
 
-  @Post(':id/like')
+  @Post(':id/dislike')
   createMovieDislike(@Param('id') movieId: number, @UserId() userId: number) {
     return this.movieService.toggleMovieLike(movieId, userId, false);
   }

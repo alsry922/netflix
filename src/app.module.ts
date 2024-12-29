@@ -18,6 +18,7 @@ import { forbiddenExceptionFilter } from './common/filter/forbidden.filter';
 import { QueryFailedExceptionFilter } from './common/filter/query-failed.filter';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'node:path';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { join } from 'node:path';
       rootPath: join(process.cwd(), 'public'),
       serveRoot: '/public/',
     }),
+    CacheModule.register(),
     MovieModule,
     DirectorModule,
     GenreModule,

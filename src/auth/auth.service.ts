@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/entity/user.entity';
 import { Repository } from 'typeorm';
@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserRoleEnum } from '../user/const/user-role.enum';
 import { envVariableKeys } from '../common/const/env.const';
+import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +16,8 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   async register(rawToken: string) {
@@ -143,5 +146,16 @@ export class AuthService {
     }
 
     return payload;
+  }
+
+  async tokenBlock(token: string) {
+    const payload = this.jwtService.decode(token);
+    const expiryDate = new Date(payload['exp'] * 1000).getTime();
+    const now = Date.now();
+    const ttlMs = Math.max(expiryDate - now, 1); // 밀리초 단위 유지
+
+    await this.cacheManager.set(`BLOCK_TOKEN_${token}`, payload, ttlMs);
+
+    return true;
   }
 }

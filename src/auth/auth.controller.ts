@@ -7,6 +7,7 @@ import {
   UseInterceptors,
   Request,
   Get,
+  Body,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -53,5 +54,10 @@ export class AuthController {
   @Get('private')
   async private(@Request() req) {
     return req.user;
+  }
+
+  @Post('token/block')
+  async blockToken(@Body('token') token: string) {
+    return await this.authService.tokenBlock(token);
   }
 }

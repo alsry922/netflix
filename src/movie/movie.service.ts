@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
-import { In, Like, Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Movie } from './entity/movie.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MovieDetail } from './entity/move-detail.entity';
@@ -16,6 +16,7 @@ import { join } from 'node:path';
 import { rename } from 'node:fs/promises';
 import { User } from '../user/entity/user.entity';
 import { MovieUserLike } from './entity/movie-user-like.entity';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class MovieService {
@@ -33,7 +34,29 @@ export class MovieService {
     @InjectRepository(MovieUserLike)
     private readonly movieUserLikeRepository: Repository<MovieUserLike>,
     private readonly commonService: CommonService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
+
+  async findRecent() {
+    const cacheData = await this.cacheManager.get('MOVIE_RECENT');
+
+    if (cacheData) {
+      console.log('캐시 가져옴');
+      return cacheData;
+    }
+
+    const movieData = await this.movieRepository.find({
+      order: {
+        createdAt: 'DESC',
+      },
+      take: 10,
+    });
+
+    await this.cacheManager.set('MOVIE_RECENT', movieData);
+
+    return movieData;
+  }
 
   async findAll(queryDto: GetMoviesDto, userId?: number) {
     const { title } = queryDto;
