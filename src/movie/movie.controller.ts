@@ -20,24 +20,13 @@ import { RBAC } from '../auth/decorator/rbac.decorator';
 import { UserRoleEnum } from '../user/const/user-role.enum';
 import { GetMoviesDto } from './dto/get-movies.dto';
 import { UserId } from '../user/decorator/user-id.decorator';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-@Controller({
-  path: 'movie',
-  version: '2',
-})
-export class MovieControllerV2 {
-  @Get()
-  getMovies() {
-    return [];
-  }
-}
-
-@Controller({
-  path: 'movie',
-  version: '1',
-})
+@Controller('movie')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard)
+@ApiBearerAuth()
+@ApiTags('movie')
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
 

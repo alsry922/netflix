@@ -52,7 +52,7 @@ import * as winston from 'winston';
           password: configService.get<string>(envVariableKeys.dbPassword),
           database: configService.get<string>(envVariableKeys.dbDatabase),
           entities: [path.join(__dirname, './**/*.entity.js')],
-          synchronize: true,
+          // synchronize: true,
           // dropSchema: true,
           timezone: 'Z',
           logging: true,
@@ -128,12 +128,10 @@ export class AppModule implements NestModule {
         {
           path: 'auth/login',
           method: RequestMethod.POST,
-          version: '1',
         },
         {
           path: 'auth/register',
           method: RequestMethod.POST,
-          version: '1',
         },
       )
       .forRoutes('*');

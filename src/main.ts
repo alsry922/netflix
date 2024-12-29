@@ -1,16 +1,30 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // { logger: [] 특정 로그 레벨 이상만 콘솔에 보이도록 한다.}
-  app.enableVersioning({
-    type: VersioningType.HEADER,
-    header: 'version',
+
+  const documentConfig = new DocumentBuilder()
+    .setTitle('코드팩토리 넷플릭스')
+    .setDescription('코드팩토리 NestJS 강의')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .addBasicAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, documentConfig);
+
+  SwaggerModule.setup('doc', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
   });
-  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+
+  // app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // 기본값 false(true 설정 시, 요청 데이터에서 우리가 dto에 정의하지 않은 프로퍼티들을 요청 객체에서 자동으로 제거
