@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import * as Joi from 'joi';
 import * as path from 'node:path';
+import { join } from 'node:path';
 import { envVariableKeys } from './common/const/env.const';
 import { BearerTokenMiddleware } from './auth/middleware/bearer-token-middleware';
 import { AuthGuard } from './auth/guard/auth.guard';
@@ -17,8 +18,10 @@ import { ResponseTimeInterceptor } from './common/interceptor/response-time.inte
 import { forbiddenExceptionFilter } from './common/filter/forbidden.filter';
 import { QueryFailedExceptionFilter } from './common/filter/query-failed.filter';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'node:path';
 import { CacheModule } from '@nestjs/cache-manager';
+import { ScheduleModule } from '@nestjs/schedule';
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
 
 @Module({
   imports: [
@@ -61,6 +64,33 @@ import { CacheModule } from '@nestjs/cache-manager';
       serveRoot: '/public/',
     }),
     CacheModule.register(),
+    ScheduleModule.forRoot(),
+    WinstonModule.forRoot({
+      level: 'debug',
+      transports: [
+        new winston.transports.Console({
+          format: winston.format.combine(
+            winston.format.colorize({
+              all: true,
+            }),
+            winston.format.timestamp(),
+            // winston.format.printf((info) => `${info.timestamp} ${info.context} ${info.level}, ${info.message}`),
+            winston.format.simple(),
+          ),
+        }),
+        new winston.transports.File({
+          dirname: join(process.cwd(), 'logs'),
+          filename: 'logs.log',
+          format: winston.format.combine(
+            // winston.format.colorize({
+            //   all: true,
+            // }),
+            winston.format.timestamp(),
+            winston.format.printf((info) => `[${info.timestamp}] ${info.context} ${info.level}, ${info.message}`),
+          ),
+        }),
+      ],
+    }),
     MovieModule,
     DirectorModule,
     GenreModule,

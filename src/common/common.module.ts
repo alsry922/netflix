@@ -6,6 +6,8 @@ import { diskStorage } from 'multer';
 import { join } from 'node:path';
 import e from 'express';
 import { v4 } from 'uuid';
+import { TasksService } from './tasks.service';
+import { DefaultLogger } from './logger/default.logger';
 
 @Module({
   imports: [
@@ -24,7 +26,7 @@ import { v4 } from 'uuid';
     }),
   ],
   controllers: [CommonController],
-  providers: [CommonService],
-  exports: [CommonService],
+  providers: [CommonService, TasksService, DefaultLogger],
+  exports: [CommonService, DefaultLogger],
 })
 export class CommonModule {}
